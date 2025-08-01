@@ -16,14 +16,14 @@ mycursor=mydb.cursor()
 #mycursor.execute("CREATE TABLE picturesTest (path VARCHAR(255) PRIMARY KEY, centerCoords VARCHAR(255), originalImage VARCHAR(255))")
 
 
-analysis_directory = os.fsencode(os.path.abspath(os.sys.argv[1]))
-output_directory = os.path.abspath(os.sys.argv[2])
-detector = MTCNN()
-faces = ex.extract(analysis_directory,detector,2,30,output_directory)
+#analysis_directory = os.fsencode(os.path.abspath(os.sys.argv[1]))
+#output_directory = os.path.abspath(os.sys.argv[2])
+#detector = MTCNN()
+#faces = ex.extract(analysis_directory,detector,2,30,output_directory)
 
-sql="INSERT INTO picturesTest (path,centerCoords,originalImage) VALUES (%s,%s,%s)"
+#sql="INSERT INTO picturesTest (path,centerCoords,originalImage) VALUES (%s,%s,%s)"
 
-for items in faces.items():
+"""for items in faces.items():
     val=[]
     path = items[0]
     val.append(items[0])
@@ -31,8 +31,7 @@ for items in faces.items():
         val.append(str(value))
     mycursor.execute(sql,tuple(val))
     mydb.commit()
-
-mycursor.execute("SELECT * FROM picturesTest")
+"""
+mycursor.execute("SELECT visagePath,identity FROM visages")
 myresult = mycursor.fetchall()
-for x in myresult:
-    print(x)
+print(myresult, type(myresult))

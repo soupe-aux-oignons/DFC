@@ -7,7 +7,7 @@ import time
 
 
 
-
+#-----Charger des fichiers--------
 def isCorrectFile(filepath):
     """prend en argument un chemin dans l'arborescence
     renvoie un booléen verifiant si un fichier est un jpg ou png"""
@@ -41,6 +41,8 @@ def load(path):
         return
 
 
+
+#--------Extraction--------
 def sizeAreaRatioCheck (imagecv2,croppedcv2,importance):
     """prend en argument une image et une zone d'interet de cette image, ainsi qu'un degré d'importance de la zone d'interet
     renvoie un booléen comparant l'aire d'une image et d'une zone d'interet contenu dans l'image, selon un pourcentage"""
@@ -72,9 +74,13 @@ def sizeAreaRatio(imagecv2,croppedcv2):
 
     return (cropsize*100)/imgsize
 
+def saveface(img_path,x,y,h,i, output_path):
+    img_save = cv2.imread(img_path)
+    face = img_save[y:y+h,x:x+h]
+    cv2.imwrite(f"{output_path}/face.{i}.jpg",face)
 
     
-def extract(input_path,detector,importance,margin,output_path):
+def extractface(input_path,detector,importance,margin,output_path):
     """prend en argument deux chemins absolu de dossier/fichier, un degré d'importance et une taille de marge
     charge, analyse puis extrait les visages d'images passées en argument sous forme de chemin absolu vers un fichier
     ou un dossier
@@ -82,11 +88,12 @@ def extract(input_path,detector,importance,margin,output_path):
     img_paths = load(input_path)
 
     i=0
-    faces=[]
-    paths=[]
+    pictures={}
+    faces={}
     for img_path in img_paths :
         img_analyse = load_image(img_path)
-        img_save = cv2.imread(img_path)
+        
+
 
         results = detector.detect_faces(img_analyse)
 
@@ -95,29 +102,26 @@ def extract(input_path,detector,importance,margin,output_path):
                 if item[0] == "box":
                     x,y,w,h = item[1]
 
-            #newX=x-margin
-            #newY=y-margin
             centerX = x+(w//2)
             centerY = y+(h//2)
-            newX = centerX - (h//2)
-            newY =centerY - (h//2)
-            face = img_save[newY:newY+(h), newX:newX+(h)]
-            #face = img_save[newY:newY+h+margin,newX:newX+w+margin]
+            newX = centerX - (h//2)-margin
+            newY =centerY - (h//2)-margin
+            face = img_save[newY:newY+h+margin, newX:newX+h+margin]
             
             if face.size != 0 and sizeAreaRatioCheck(img_save,face,importance) :
                 
-                    cv2.imwrite(f"{output_path}/face.{i}.jpg",face)
+                    
 
-                    faces.append(face)
-                    paths.append(f"{output_path}/face.{i}.jpg")
-
+                    facedic = {"centerCoords" : (centerX,centerY), "originalImage":str(img_path)}
+                    
+                    faces[f"{output_path}/face.{i}.jpg"] = facedic
                     seconds = time.time()
                     localtime = time.ctime(seconds)
                     print(i, localtime, img_path)
                     i+=1
                     
 
-    return faces,paths
+    return faces
             
 
 if __name__=="__main__":
@@ -126,5 +130,5 @@ if __name__=="__main__":
     detector = MTCNN()
 
     seconds = time.time()
-    extract(analysis_directory,detector,2,30,output_directory)
+    extractface(analysis_directory,detector,2,30,output_directory)
     print(time.ctime(seconds))

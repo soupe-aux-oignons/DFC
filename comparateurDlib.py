@@ -1,19 +1,19 @@
 import os
 import face_recognition
-import numpy as np
 import cv2
-import extracteur as ex
+
 
 def isAFace(path):
     face_locations = face_recognition.face_locations(face_recognition.load_image_file(path))
     return face_locations
 
-def comparateur (path1, path2):
+def comparateurDlib(path1, path2):
     """prends en argument deux chemins absolus vers un fichier/dossier représentant/contenant des visages 
     compare les visages présents dans les deux fichiers et renvoie une liste de booleen et de distance entre les visages"""
     
     img1_encoding = face_recognition.face_encodings(face_recognition.load_image_file(path1))
     img2_encoding = face_recognition.face_encodings(face_recognition.load_image_file(path2))
+   
     print(img1_encoding)
     test_bool =[]
     test_dist =[]
@@ -65,14 +65,11 @@ def classificationVisage(visage_path,data_path,unidentified_path, threshold):
         trues=0
         size_of_directory=0 
         for image_path in sous_dir_path_load:
-            print(image_path)
             bool_checks, dist_checks = comparateur(visage_path, image_path)
-            print(dist_checks)
             for check in dist_checks:
                 if check[0]<=0.5:
                     trues+=1
                 size_of_directory+=1
-        print(trues)
         if trues/size_of_directory>=threshold:
             cv2.imwrite(sous_dir_path+'/'+f"visageconnu{len(sous_dir_path_load)}.jpg",visage)
             return
@@ -96,7 +93,7 @@ if __name__=="__main__":
     #liste = rechercheImageParVisage(ex.load(path1)[0],ex.load(path2))
     #print(liste, len(liste))
     liste =['/Users/developpement/Desktop/input/S1820897.jpg', '/Users/developpement/Desktop/input/S1820882.jpg', '/Users/developpement/Desktop/input/S1820933.jpg', '/Users/developpement/Desktop/input/S1830048.jpg', '/Users/developpement/Desktop/input/S1830001.jpg', '/Users/developpement/Desktop/input/S1820979.jpg', '/Users/developpement/Desktop/input/S1820976.jpg', '/Users/developpement/Desktop/input/S1830027.jpg', '/Users/developpement/Desktop/input/S1830031.jpg', '/Users/developpement/Desktop/input/S1820972.jpg', '/Users/developpement/Desktop/input/S1830051.jpg', '/Users/developpement/Desktop/input/S1820873.jpg', '/Users/developpement/Desktop/input/S1820913.jpg', '/Users/developpement/Desktop/input/S1820904.jpg']
-    affichage_liste(liste)
+    affichage_liste(['/Users/developpement/Desktop/input/S1820882.jpg', '/Users/developpement/Desktop/input/S1830048.jpg', '/Users/developpement/Desktop/input/S1830001.jpg', '/Users/developpement/Desktop/input/S1830031.jpg', '/Users/developpement/Desktop/input/S1820972.jpg', '/Users/developpement/Desktop/input/S1830051.jpg', '/Users/developpement/Desktop/input/S1820904.jpg'])
 
     #comparateur(ex.load(path1)[0], ex.load(path2)[0])
 
